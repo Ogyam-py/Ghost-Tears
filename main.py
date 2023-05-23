@@ -59,10 +59,6 @@ class ghost():
                 except:
                     if self.ans == test_word: return self.motivation(+1), 0, self.life
 
-        
-            
-
-                
 if __name__ == "__main__":
     play = ghost()
     while True:
@@ -73,4 +69,7 @@ if __name__ == "__main__":
         elif count == 0:
             print(ans)
             break
-        
+
+print("First time using git")
+
+print("It's fun to learn something new")
