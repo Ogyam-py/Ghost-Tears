@@ -10,7 +10,7 @@ class ghost():
 
     def getCountry(self):     
         with open("countries.txt", "r") as fh:
-            self.words = [i.replace("\n", "") for i in fh.readlines()]
+            self.words = fh.read().split("\n")
         while True:
             self.word = random.choice(self.words).replace("\n", "")
             if self.tempMemory(self.word):
@@ -18,7 +18,7 @@ class ghost():
         
     def tempMemory(self, new):
         with open("history.txt", "w+") as history_fh:
-            temp_words = [i.replace("\n", "") for i in history_fh.readlines()]
+            temp_words = history_fh.read().split("\n")
         if self.word == None: pass
         else:
             for i in temp_words:
@@ -36,7 +36,7 @@ class ghost():
         else: return "You can do better!"
 
     def game(self):
-        test_word, alt_list = self.getCountry()
+        test_word, alt_list = ghost.getCountry()
 
         if self.ans == None:
             self.count+=1
@@ -47,17 +47,17 @@ class ghost():
             try:
                 return test_word[:self.count], self.count, self.life
             except:
-                if self.ans == test_word: return self.motivation(+1), 0, self.life
+                if self.ans == test_word: return ghost.motivation(+1), 0, self.life
         
         else:
-                alt_list = [ i for i in alt_list if i.startswith(self.ans)]
-                if alt_list == []: return test_word+"\n"+self.motivation(-1), 0, self.life-1
-                test_word = random.choice(alt_list)
-                self.count += 2
-                try:
-                    return test_word[:self.count], self.count, self.life
-                except:
-                    if self.ans == test_word: return self.motivation(+1), 0, self.life
+            alt_list = [ i for i in alt_list if i.startswith(self.ans)]
+            if alt_list == []: return test_word+"\n" + ghost.motivation(-1), 0, self.life-1
+            test_word = random.choice(alt_list)
+            self.count += 2
+            try:
+                return test_word[:self.count], self.count, self.life
+            except:
+                if self.ans == test_word: return ghost.motivation(+1), 0, self.life
 
 if __name__ == "__main__":
     play = ghost()
@@ -70,6 +70,4 @@ if __name__ == "__main__":
             print(ans)
             break
 
-print("First time using git")
 
-print("It's fun to learn something new")
