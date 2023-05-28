@@ -1,42 +1,39 @@
 import random
 
 class ghost():
-
+    AppData = {"temporal":[], "permanent": []}
+    words = []
     def __init__(self, ans = None, count=0, life = 3) -> None:
         self.ans = ans
         self.life = life
         self.count = count
-        pass
 
-    def getCountry(self):     
-        with open("countries.txt", "r") as fh:
-            self.words = fh.read().split("\n")
+    @classmethod
+    def loading(self):
+        with open("countris.txt", "r") as fh_countries:
+            ghost.words.extend(random.shuffle(fh_countries.read().split("\n")))
+
+    def getCountry(self):
         while True:
-            self.word = random.choice(self.words).replace("\n", "")
-            if self.tempMemory(self.word):
-                return self.word, [x for x in self.words if (x.startswith(self.word[0]) and x != self.word and self.tempMemory(x))]
-        
-    def tempMemory(self, new):
-        with open("history.txt", "w+") as history_fh:
-            temp_words = history_fh.read().split("\n")
-        if self.word == None: pass
-        else:
-            for i in temp_words:
-                if i == new: return False
-            return True
+            if self.ans == "":
+                word_range = random.choices(ghost.words, k=5)
+            else:
+                word_range = random.shuffle([i for i in ghost.words if i.startswith() == self.ans])
 
-    def history(self, old=""):
-        with open("history.txt", "w+") as history_fh: pass
-        if old == None: pass
-        elif old == "terminate": history_fh.write()
-        else: history_fh.write(old)
+            word = random.choice(word_range)
+            if word not in ghost.AppData["temporal"] and word not in ghost.AppData["permanent"]:
+                return word
+            
+    
+    def gameHistory(self):
+        pass
 
     def motivation(self, num):
         if num > 0: return "Great!"
         else: return "You can do better!"
 
     def game(self):
-        test_word, alt_list = ghost.getCountry()
+        test_word = ghost.getCountry()
 
         if self.ans == None:
             self.count+=1
