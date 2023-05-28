@@ -1,70 +1,112 @@
 import random
 
 class ghost():
-    AppData = {"temporal":[], "permanent": []}
-    words = []
-    def __init__(self, ans = None, count=0, life = 3) -> None:
-        self.ans = ans
+    # AppData = {"temporal":[], "permanent": []}
+    def __init__(self, word = None, ans = "", status = True, count=1, life = 3) -> None:
+        self.ans = ans.lower()
         self.life = life
         self.count = count
+        self.status = status
+        self.word = word
 
     @classmethod
-    def loading(self):
-        with open("countris.txt", "r") as fh_countries:
-            ghost.words.extend(random.shuffle(fh_countries.read().split("\n")))
+    def pull_data_gameWords(self):
+        with open("countries.txt", "r") as fh_countries:
+            all_words = fh_countries.read().split("\n")
+
+        with open("history.txt", "r") as fh_history:
+            del_words = fh_history.read().split("\n")
+        
+        ghost.words = [i for i in all_words if i not in del_words]
+
+            
 
     def getCountry(self):
-        while True:
+        if self.status:
             if self.ans == "":
-                word_range = random.choices(ghost.words, k=5)
-            else:
-                word_range = random.shuffle([i for i in ghost.words if i.startswith() == self.ans])
-
-            word = random.choice(word_range)
-            if word not in ghost.AppData["temporal"] and word not in ghost.AppData["permanent"]:
-                return word
+                random.shuffle(ghost.words)
+                self.word = random.choice(ghost.words).lower()
+                self.status = True
             
+            else:
+                lst = [i for i in ghost.words if i.startswith(self.ans) == self.ans]
+                self.word = random.choice(random.shuffle(lst)).lower()
+
+                if len(lst) == 0: self.status = None
+                elif len(lst) <= 2: self.status = False
+                elif len(lst) > 2: self.status = True
+
+
+        
     
-    def gameHistory(self):
-        pass
+    def game(self):
+        if self.ans == "":
+            return self.word[0].upper(), self.count, self.life
+        else:
+            self.count += 2
+            ghost.getCountry()
+
+            if self.word == self.ans:
+                self.life += 1
+                ghost.push_data_gameWordsHistory()
+                return None, ghost.motivation(), True, 1, self.life
+            
+            elif self.word[:self.count] == self.word:
+                self.life += 1
+                ghost.push_data_gameWordsHistory()
+                return None, ghost.motivation(), True, 1, self.life
+             
+            elif self.status == None:
+                self.life -= 1
+                return None, ghost.motivation(False), True, 1, self.life
+            
+            else:
+                return self.word, self.word[:self.count].upper(), self.status, self.count, self.life
+   
+    def push_data_gameWordsHistory(self):
+        with open("history.txt", "a+") as fh_history:
+            fh_history.write(self.word+"\n")
 
     def motivation(self, num):
         if num > 0: return "Great!"
         else: return "You can do better!"
 
-    def game(self):
-        test_word = ghost.getCountry()
+    # def game(self):
+    #     test_word = ghost.getCountry()
 
-        if self.ans == None:
-            self.count+=1
-            return test_word[:self.count], self.count, self.life
+    #     if self.ans == None:
+    #         self.count+=1
+    #         return test_word[:self.count], self.count, self.life
         
-        elif test_word.startswith(self.ans):
-            self.count += 2
-            try:
-                return test_word[:self.count], self.count, self.life
-            except:
-                if self.ans == test_word: return ghost.motivation(+1), 0, self.life
+    #     elif test_word.startswith(self.ans):
+    #         self.count += 2
+    #         try:
+    #             return test_word[:self.count], self.count, self.life
+    #         except:
+    #             if self.ans == test_word: return ghost.motivation(+1), 0, self.life
         
-        else:
-            alt_list = [ i for i in alt_list if i.startswith(self.ans)]
-            if alt_list == []: return test_word+"\n" + ghost.motivation(-1), 0, self.life-1
-            test_word = random.choice(alt_list)
-            self.count += 2
-            try:
-                return test_word[:self.count], self.count, self.life
-            except:
-                if self.ans == test_word: return ghost.motivation(+1), 0, self.life
+    #     else:
+    #         alt_list = [ i for i in alt_list if i.startswith(self.ans)]
+    #         if alt_list == []: return test_word+"\n" + ghost.motivation(-1), 0, self.life-1
+    #         test_word = random.choice(alt_list)
+    #         self.count += 2
+    #         try:
+    #             return test_word[:self.count], self.count, self.life
+    #         except:
+    #             if self.ans == test_word: return ghost.motivation(+1), 0, self.life
 
 if __name__ == "__main__":
-    play = ghost()
-    while True:
-        ans, count, life = play.game()
-        if life > 0:
-            l = input(f"Contribute a letter to spell a countries name:\n\t{ans}")
-            play = ghost(ans+l, count, life)
-        elif count == 0:
-            print(ans)
-            break
+    
+    pass
+    # I am yet to test the new updates...
+
+    # while True:
+    #     ans, count, life = play.game()
+    #     if life > 0:
+    #         l = input(f"Contribute a letter to spell a countries name:\n\t{ans}")
+    #         play = ghost(ans+l, count, life)
+    #     elif count == 0:
+    #         print(ans)
+    #         break
 
 
