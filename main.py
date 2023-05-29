@@ -26,39 +26,38 @@ class ghost():
             if self.ans == "":
                 random.shuffle(ghost.words)
                 self.word = random.choice(ghost.words).lower()
-                self.status = True
-            
+                self.status = bool([i for i in ghost.words if i.startswith(self.word[0])])
+
             else:
                 lst = [i for i in ghost.words if i.startswith(self.ans) == self.ans]
-                self.word = random.choice(random.shuffle(lst)).lower()
+                if bool(lst):
+                    random.shuffle(lst)
+                    self.word = random.choice(lst).lower()
 
-                if len(lst) == 0: self.status = None
-                elif len(lst) <= 2: self.status = False
-                elif len(lst) > 2: self.status = True
-
-
-        
+                    if len(lst) <= 2: self.status = False
+                    elif len(lst) > 2: self.status = True
+                else:
+                    self.status = None
     
     def game(self):
+        self.getCountry()
         if self.ans == "":
-            return self.word[0].upper(), self.count, self.life
+            return self.word, self.word[0].upper(), self.status, self.count, self.life
         else:
             self.count += 2
-            ghost.getCountry()
-
             if self.word == self.ans:
                 self.life += 1
-                ghost.push_data_gameWordsHistory()
-                return None, ghost.motivation(), True, 1, self.life
+                self.push_data_gameWordsHistory()
+                return None, self.motivation(), True, 1, self.life
             
             elif self.word[:self.count] == self.word:
                 self.life += 1
-                ghost.push_data_gameWordsHistory()
-                return None, ghost.motivation(), True, 1, self.life
+                self.push_data_gameWordsHistory()
+                return None, self.motivation(), True, 1, self.life
              
             elif self.status == None:
                 self.life -= 1
-                return None, ghost.motivation(False), True, 1, self.life
+                return None, self.motivation(False), True, 1, self.life
             
             else:
                 return self.word, self.word[:self.count].upper(), self.status, self.count, self.life
@@ -96,17 +95,14 @@ class ghost():
     #             if self.ans == test_word: return ghost.motivation(+1), 0, self.life
 
 if __name__ == "__main__":
-    
-    pass
-    # I am yet to test the new updates...
-
-    # while True:
-    #     ans, count, life = play.game()
-    #     if life > 0:
-    #         l = input(f"Contribute a letter to spell a countries name:\n\t{ans}")
-    #         play = ghost(ans+l, count, life)
-    #     elif count == 0:
-    #         print(ans)
-    #         break
+    player = ghost()
+    ghost.pull_data_gameWords()
+    word, ans, status, count, life = player.game()
+    for x in range(12):
+        print(ans)
+        l = input()
+        ans = ans+l
+        player = ghost(word, ans, status, count, life)
+        word, ans, status, count, life = player.game()
 
 
